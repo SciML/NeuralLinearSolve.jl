@@ -9,8 +9,8 @@ const TARGET_SIZE = 64
 
 function matrix_to_spy(A::SparseMatrixCSC)
     # Input: a sparse matrix A
-    # Output: 64×64 grayscale spy plot image returned as a Float32 array of shape (64, 64, 1, 1) 
-    
+    # Output: 64×64 grayscale spy plot image returned as a Float32 array of shape (64, 64, 1, 1)
+
     img = _downsample_spy(A, TARGET_SIZE)
     # Shape is (height, width, channels, batch) = (64, 64, 1, 1)
     X = zeros(Float32, TARGET_SIZE, TARGET_SIZE, 1, 1)

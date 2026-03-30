@@ -13,17 +13,19 @@ const _LABELS = Ref{Vector{String}}(String[])
 
 function _load_model!()
     # Loads CNN model from the bundled BSON file on first call. Subsequent calls are no-ops (model is cached in `_MODEL`).
-    if _MODEL[] === nothing
+    return if _MODEL[] === nothing
         if !isfile(_MODEL_PATH)
-            error("""
-            Model weights not found at: $_MODEL_PATH
+            error(
+                """
+                Model weights not found at: $_MODEL_PATH
 
-            Please ensure solver_model_cnn.bson is present in the
-            artifacts/ directory of the NeuralLinearSolve package.
-            """)
+                Please ensure solver_model_cnn.bson is present in the
+                artifacts/ directory of the NeuralLinearSolve package.
+                """
+            )
         end
         @load _MODEL_PATH model_cpu label_names
-        _MODEL[]  = model_cpu
+        _MODEL[] = model_cpu
         _LABELS[] = label_names
     end
 end
@@ -44,7 +46,7 @@ function predict_solver(A::SparseMatrixCSC)
 
     # Generate SPY plot and run CNN forward pass
     X = matrix_to_spy(A)
-    model  = _MODEL[]
+    model = _MODEL[]
     labels = _LABELS[]
 
     # Run in eval mode (disables Dropout)
@@ -67,8 +69,8 @@ function predict_solver_probs(A::SparseMatrixCSC)
     # Output: Predicted probability for each solver (for each of `:UMFPACK`, `:KLU`, `:Pardiso)
     _load_model!()
 
-    X      = matrix_to_spy(A)
-    model  = _MODEL[]
+    X = matrix_to_spy(A)
+    model = _MODEL[]
     labels = _LABELS[]
 
     Flux.testmode!(model)
