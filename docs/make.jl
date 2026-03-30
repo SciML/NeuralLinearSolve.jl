@@ -1,9 +1,8 @@
 using NeuralLinearSolve
 using Documenter
 
-if isfile("./docs/Manifest.toml")
-    cp("./docs/Manifest.toml", "./docs/src/assets/Manifest.toml", force = true)
-end
+mkpath("./docs/src/assets")
+cp("./docs/Manifest.toml", "./docs/src/assets/Manifest.toml", force = true)
 cp("./docs/Project.toml", "./docs/src/assets/Project.toml", force = true)
 
 DocMeta.setdocmeta!(NeuralLinearSolve, :DocTestSetup, :(using NeuralLinearSolve); recursive = true)
