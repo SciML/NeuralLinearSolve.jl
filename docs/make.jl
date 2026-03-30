@@ -1,7 +1,9 @@
 using NeuralLinearSolve
 using Documenter
 
-cp("./docs/Manifest.toml", "./docs/src/assets/Manifest.toml", force = true)
+if isfile("./docs/Manifest.toml")
+    cp("./docs/Manifest.toml", "./docs/src/assets/Manifest.toml", force = true)
+end
 cp("./docs/Project.toml", "./docs/src/assets/Project.toml", force = true)
 
 DocMeta.setdocmeta!(NeuralLinearSolve, :DocTestSetup, :(using NeuralLinearSolve); recursive = true)
@@ -15,7 +17,6 @@ makedocs(
     clean = true, doctest = false, linkcheck = true,
     warnonly = [:docs_block, :missing_docs],
     format = Documenter.HTML(
-        assets = ["assets/favicon.ico"],
         canonical = "https://docs.sciml.ai/NeuralLinearSolve/stable/"
     ),
     pages = pages
