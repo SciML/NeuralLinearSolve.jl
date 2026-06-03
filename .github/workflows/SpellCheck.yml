@@ -8,7 +8,6 @@ on:
 
 jobs:
   typos:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: crate-ci/typos@master
+    name: "Spell Check"
+    uses: "SciML/.github/.github/workflows/spellcheck.yml@v1"
+    secrets: "inherit"
