@@ -20,15 +20,17 @@ Loads the CNN model from the BSON file on first call. Subsequent calls are from 
 function _load_model!()
     if _MODEL[] === nothing
         if !isfile(_MODEL_PATH)
-            error("""
-            Model weights not found at: $_MODEL_PATH
+            error(
+                """
+                Model weights not found at: $_MODEL_PATH
 
-            Please ensure solver_model_cnn.bson is present in the
-            artifacts/ directory of the NeuralLinearSolve package.
-            """)
+                Please ensure solver_model_cnn.bson is present in the
+                artifacts/ directory of the NeuralLinearSolve package.
+                """
+            )
         end
         @load _MODEL_PATH model_cpu label_names
-        _MODEL[]  = model_cpu
+        _MODEL[] = model_cpu
         _LABELS[] = label_names
     end
 end
