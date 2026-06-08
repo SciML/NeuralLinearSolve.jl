@@ -9,6 +9,6 @@ using FileIO
 include("spy_plot.jl")
 include("predict.jl")
 
-export predict_solver, predict_solver_probs
+export predict_solver, predict_solver_scores
 
 end
