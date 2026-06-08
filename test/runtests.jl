@@ -12,12 +12,13 @@ using Test
         @test result in (:UMFPACK, :KLU, :Pardiso)
     end
 
-    @testset "predict_solver_probs returns valid probabilities" begin
+    @testset "predict_solver_scores returns valid scores" begin
         A = sprand(1000, 1000, 0.01)
-        probs = predict_solver_probs(A)
-        @test probs isa Dict{Symbol, Float32}
-        @test isapprox(sum(values(probs)), 1.0, atol = 1.0e-5)
-        @test all(v >= 0 for v in values(probs))
+        scores = predict_solver_scores(A)
+        @test scores isa Dict{Symbol, Float32}
+        @test all(v >= 0 for v in values(scores))
+        @test Set(keys(scores)) == Set([:UMFPACK, :KLU, :Pardiso])
+        @test minimum(values(scores)) == 0.0f0
     end
 
     @testset "diagonal matrix prediction" begin

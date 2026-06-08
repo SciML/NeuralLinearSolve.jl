@@ -1,19 +1,24 @@
-# Loads the frozen CNN weights and makes predict_solver(A) and predict_solver_probs(A)
+# predict.jl
+# Loads the frozen CNN weights and exposes predict_solver(A).
+# Regression version: model outputs [log(t_umfpack/t_klu), log(t_pardiso/t_klu)]
+# Prediction = argmin of [log_umf_klu, 0, log_pard_klu] (KLU = 0 baseline)
+
 using BSON: @load
 using Flux
 using SparseArrays
 
-# Path to the bundled model weights (relative to this file)
-const _MODEL_PATH = joinpath(@__DIR__, "..", "artifacts", "solver_model_cnn.bson")
 
-# Module-level model cache, loaded once on first call
-const _MODEL = Ref{Any}(nothing)
+const _MODEL_PATH = joinpath(@__DIR__, "..", "artifacts", "solver_model_cnn.bson")
+const _MODEL  = Ref{Any}(nothing)
 const _LABELS = Ref{Vector{String}}(String[])
 
+"""
+    _load_model!()
 
+Loads the CNN model from the BSON file on first call. Subsequent calls are from cache.
+"""
 function _load_model!()
-    # Loads CNN model from the bundled BSON file on first call. Subsequent calls are no-ops (model is cached in `_MODEL`).
-    return if _MODEL[] === nothing
+    if _MODEL[] === nothing
         if !isfile(_MODEL_PATH)
             error(
                 """
@@ -31,50 +36,78 @@ function _load_model!()
 end
 
 """
+    predict_solver(A::SparseMatrixCSC) -> Symbol
+
+Predicts the fastest direct linear solver for the sparse matrix `A`n using a pretrained CNN on spy plots.
+Returns one of: `:UMFPACK`, `:KLU`, `:Pardiso`
+
 # Example
 ```julia
 using SparseArrays, NeuralLinearSolve
 
 A = sprand(1000, 1000, 0.01)
-solver = predict_solver(A)  # :KLU
+solver = predict_solver(A)  # e.g. :KLU
 ```
 """
 function predict_solver(A::SparseMatrixCSC)
-    # Input: sparse matrix A
-    # Output: Predicted faster linear solver for A (one of `:UMFPACK`, `:KLU`, `:Pardiso)
     _load_model!()
 
-    # Generate SPY plot and run CNN forward pass
-    X = matrix_to_spy(A)
-    model = _MODEL[]
+    # Warn if complex
+    if eltype(A) <: Complex
+        @warn "predict_solver was trained on real-valued matrices only. Predictions may be unreliable for complex matrices."
+    end
+
+    X      = matrix_to_spy(A)
+    model  = _MODEL[]
     labels = _LABELS[]
 
-    # Run in eval mode (disables Dropout)
     Flux.testmode!(model)
-    probs = model(X)
-    idx = argmax(vec(probs))
+    out = vec(model(X))   # [log(t_umf/t_klu), log(t_pard/t_klu)]
+
+    # KLU is baseline (score = 0)
+    # UMFPACK score = log(t_umf/t_klu): positive = UMFPACK slower than KLU
+    # Pardiso score = log(t_pard/t_klu): positive = Pardiso slower than KLU
+    scores = [out[1], 0.0f0, out[2]]
+    idx    = argmin(scores)   # 1=UMFPACK, 2=KLU, 3=Pardiso
 
     return Symbol(labels[idx])
 end
 
 """
+    predict_solver_scores(A::SparseMatrixCSC) -> Dict{Symbol, Float32}
+
+Return a proxy score for each solver derived from the predicted log timing ratios. Lower score = faster predicted solver. Scores are shifted so the
+minimum is zero and negated so that higher = more confident recommendation.
+
+Note: These are not probabilities in [0,1] but relative speed scores useful for ranking solvers.
+
 # Example
 ```julia
-probs = predict_solver_probs(A)
-# Dict(:UMFPACK => 0.05, :KLU => 0.91, :Pardiso => 0.04)
+scores = predict_solver_scores(A)
+# Dict(:UMFPACK => 0.0, :KLU => 1.2, :Pardiso => 0.3)
+# Higher score = more strongly recommended
 ```
 """
-function predict_solver_probs(A::SparseMatrixCSC)
-    # Input: sparse matrix A
-    # Output: Predicted probability for each solver (for each of `:UMFPACK`, `:KLU`, `:Pardiso)
+function predict_solver_scores(A::SparseMatrixCSC)
     _load_model!()
 
-    X = matrix_to_spy(A)
-    model = _MODEL[]
+    if eltype(A) <: Complex
+        @warn "predict_solver was trained on real-valued matrices only. Predictions may be unreliable for complex matrices."
+    end
+
+    X      = matrix_to_spy(A)
+    model  = _MODEL[]
     labels = _LABELS[]
 
     Flux.testmode!(model)
-    probs = vec(model(X))
+    out = vec(model(X))   # [log(t_umf/t_klu), log(t_pard/t_klu)]
 
-    return Dict(Symbol(labels[i]) => probs[i] for i in 1:length(labels))
+    # scores: lower = faster
+    scores = [out[1], 0.0f0, out[2]]
+
+    # shift so min = 0, then negate so higher = better
+    shifted = scores .- minimum(scores)
+    ranking = maximum(shifted) .- shifted
+
+    return Dict(Symbol(labels[i]) => ranking[i] for i in 1:length(labels))
 end
