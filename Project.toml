@@ -15,6 +15,9 @@ BSON = "0.3.9"
 FileIO = "1.18.0"
 Flux = "0.16.9"
 Images = "0.26.2"
+LinearAlgebra = "1.10"
+SparseArrays = "1.10"
+Test = "1"
 julia = "1.10"
 
 [extras]
