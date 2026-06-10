@@ -1,12 +1,11 @@
 using Test
+using NeuralLinearSolve
+using SparseArrays
+using LinearAlgebra
 
 const GROUP = get(ENV, "GROUP", "All")
 
 if GROUP == "All" || GROUP == "Core"
-    using NeuralLinearSolve
-    using SparseArrays
-    using LinearAlgebra
-
     @testset "NeuralLinearSolve.jl" begin
 
         @testset "predict_solver returns valid symbol" begin
