@@ -1,8 +1,7 @@
 # Converts a sparse matrix to a 64x64 Float32 grayscale SPY plot for use as input to the CNN solver predictor.
 # The SPY plot is a binary image where each pixel indicates the presence of at least one nonzero entry in the corresponding block of the matrix.
 
-using SparseArrays
-using Images
+using SparseArrays: SparseMatrixCSC, nzrange, rowvals
 
 const TARGET_SIZE = 64
 

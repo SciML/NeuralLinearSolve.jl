@@ -1,10 +1,10 @@
 module NeuralLinearSolve
 
-using SparseArrays
-using Flux
-using BSON
-using Images
-using FileIO
+using SparseArrays: SparseArrays
+using Flux: Flux
+using BSON: BSON
+using Images: Images
+using FileIO: FileIO
 
 include("spy_plot.jl")
 include("predict.jl")

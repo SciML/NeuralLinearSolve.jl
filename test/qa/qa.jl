@@ -1,16 +1,15 @@
+using SciMLTesting
 using NeuralLinearSolve
-using Aqua
 using JET
 using Test
 
-@testset "Aqua" begin
-    Aqua.test_all(NeuralLinearSolve; deps_compat = (; check_extras = false))
-    # deps_compat extras check fails: root Project.toml lists `Pkg` under [extras]
-    # without a [compat] entry. Tracked at:
-    # https://github.com/SciML/NeuralLinearSolve.jl/issues/10
-    @test_broken false  # Aqua deps_compat extras: missing [compat] for `Pkg` — see https://github.com/SciML/NeuralLinearSolve.jl/issues/10
-end
-
-@testset "JET" begin
-    JET.test_package(NeuralLinearSolve; target_defined_modules = true)
-end
+run_qa(
+    NeuralLinearSolve;
+    explicit_imports = true,
+    jet_kwargs = (; target_defined_modules = true),
+    ei_kwargs = (;
+        # `@load` is BSON's documented model-loading macro but is not declared
+        # `public`/exported in BSON, so it trips all_explicit_imports_are_public.
+        all_explicit_imports_are_public = (; ignore = (Symbol("@load"),)),
+    ),
+)
