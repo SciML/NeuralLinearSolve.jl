@@ -1,7 +1,7 @@
 # Loads the frozen CNN weights and makes predict_solver(A) and predict_solver_probs(A)
 using BSON: @load
-using Flux
-using SparseArrays
+using Flux: Flux
+using SparseArrays: SparseMatrixCSC
 
 # Path to the bundled model weights (relative to this file)
 const _MODEL_PATH = joinpath(@__DIR__, "..", "artifacts", "solver_model_cnn.bson")
