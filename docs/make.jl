@@ -13,8 +13,8 @@ makedocs(
     sitename = "NeuralLinearSolve.jl",
     authors = "Chris Rackauckas",
     modules = [NeuralLinearSolve],
-    clean = true, doctest = false, linkcheck = true,
-    warnonly = [:docs_block, :missing_docs],
+    clean = true, doctest = true, linkcheck = true,
+    checkdocs = :exports,
     format = Documenter.HTML(
         canonical = "https://docs.sciml.ai/NeuralLinearSolve/stable/"
     ),
