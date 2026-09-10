@@ -2,5 +2,8 @@
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 NeuralLinearSolve = "653043a4-d5d9-4278-bf03-e9e860856c28"
 
+[sources]
+NeuralLinearSolve = {path = "/home/runner/work/NeuralLinearSolve.jl/NeuralLinearSolve.jl"}
+
 [compat]
 Documenter = "1"
