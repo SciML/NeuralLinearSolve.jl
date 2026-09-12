@@ -561,10 +561,10 @@ version = "0.16.11"
 
 [[deps.ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
-git-tree-sha1 = "1b86cca764a61dcac4fef4c5e16e378e5ed6953c"
+git-tree-sha1 = "3b0f72e2ffef1a139ac450725c9ecd01c0a3c050"
 registries = "General"
 uuid = "f6369f11-7733-5829-9624-2563aa707210"
-version = "1.4.5"
+version = "1.4.6"
 weakdeps = ["StaticArrays"]
 
     [deps.ForwardDiff.extensions]
@@ -1306,7 +1306,7 @@ version = "1.3.0"
 
 [[deps.NeuralLinearSolve]]
 deps = ["Flux", "Images", "JLD2", "NNlib", "PrecompileTools", "SparseArrays"]
-path = "/home/runner/work/NeuralLinearSolve.jl/NeuralLinearSolve.jl"
+path = "/home/runner/_work/NeuralLinearSolve.jl/NeuralLinearSolve.jl"
 uuid = "653043a4-d5d9-4278-bf03-e9e860856c28"
 version = "1.0.0-DEV"
 
@@ -1946,10 +1946,10 @@ version = "1.1.0"
 
 [[deps.XZ_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "b29c22e245d092b8b4e8d3c09ad7baa586d9f573"
+git-tree-sha1 = "e52eca002a11c30a858185efdfb15311e1c7a6bf"
 registries = "General"
 uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.8.3+0"
+version = "5.8.4+0"
 
 [[deps.Xorg_libX11_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
